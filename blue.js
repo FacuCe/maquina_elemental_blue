@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // INSTRUCCIONES
 
         // HALT
-        
+
         // ADD
         ADD: () => {
             CPU.Z = CPU.ACC;
@@ -169,16 +169,49 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             CPU.ALU = auxiliar;
             CPU.ACC = CPU.ALU;
-        }
+        },
 
         // LDA
+        LDA: () => {
+            CPU.ACC = UM.leer_memoria(CPU.leer_dir_IR());
+        },
+
         // STA
+        STA: () => {
+            UM.escribir_memoria(CPU.leer_dir_IR(), CPU.ACC);
+        },
+
         // SRJ
+        SRJ: () => {
+            CPU.ACC = CPU.PC;
+            CPU.ACC = ponerCeros_16bits(CPU.ACC);
+            CPU.PC = CPU.leer_dir_IR();
+        },
+
         // JMA
+        JMA: () => {
+            if (CPU.ACC.charAt(0) == '1') {
+                CPU.PC = CPU.leer_dir_IR();
+            }
+        },
+
         // JMP
+        JMP: () => {
+            CPU.PC = CPU.leer_dir_IR();
+        },
+
         // INP
         // OUT
         // RAL
+        RAL: () => {
+            CPU.Z = CPU.ACC;
+            let aux = '';
+            for (let i = 1; i < 16; i++) {
+                aux = aux + CPU.Z.charAt(i);
+            };
+            CPU.ALU = aux + CPU.Z.charAt(0);
+            CPU.ACC = CPU.ALU;
+        },
         // CSA
         // NOP
     };
@@ -187,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // PRUEBA
+    // PRUEBAS
 
 
     //PRUEBA DEL ADD
@@ -262,5 +295,80 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log(CPU.ACC);
     */
+
+
+    //PRUEBA DEL LDA
+    /*
+    CPU.IR = '0000000000000111';
+    UM.escribir_memoria('000000000111', '1100000000001111');
+    console.log(CPU.ACC);
+
+    CPU.LDA();
+    console.log(CPU.ACC);
+    */
+
+
+    //PRUEBA DEL STA
+    /*
+    CPU.ACC = '1111111111000000'
+    CPU.IR = '0000000000000111';
+    UM.escribir_memoria('000000000111', '1100000000001111');
+    console.log(UM.leer_memoria('000000000111'));
+
+
+    CPU.STA();
+    console.log(UM.leer_memoria('000000000111'));
+    */
+
+
+    //PRUEBA DEL SRJ
+    /*
+    CPU.ACC = '1111111111000000';
+    CPU.PC = '000000000111';
+    CPU.IR = '0000000001000000';
+    console.log(CPU.ACC);
+    console.log(CPU.PC);
+    console.log(CPU.IR);
+
+    CPU.SRJ();
+    console.log(CPU.ACC);
+    console.log(CPU.PC);
+    */
+
+
+    //PRUEBA DEL JMA
+    /*
+    CPU.ACC = '1000000000000000';
+    CPU.IR = '0000000000011000';
+    CPU.PC = '000000000001';
+    console.log(CPU.PC)
+
+    CPU.JMA();
+
+    console.log(CPU.PC);    //cambia el PC porque el ACC empieza con 1
+    */
+
+
+    //PRUEBA DEL JMP
+    /*
+    CPU.PC = '000000110010';
+    CPU.IR = '0000000010000001';
+    console.log(CPU.PC);
+
+    CPU.JMP();
+    console.log(CPU.PC);
+    */
+
+
+    //PRUEBA DEL RAL
+    /*
+    CPU.ACC = '0000000100010011';
+    console.log(CPU.ACC);
+
+    CPU.RAL();
+    console.log(CPU.ACC);
+    */
+
+
 
 })
