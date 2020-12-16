@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // INSTRUCCIONES
 
         // HALT
+        
         // ADD
         ADD: () => {
             CPU.Z = CPU.ACC;
@@ -107,8 +108,53 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         // XOR
+        XOR: () => {
+            CPU.Z = CPU.ACC;
+            CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
+            let aux = '';
+            for (let i = 0; i < 16; i++) {
+                if (CPU.Z.charAt(i) == CPU.Y.charAt(i)) {
+                    aux = aux + '0';
+                } else {
+                    aux = aux + '1';
+                }
+            }
+            CPU.ALU = aux;
+            CPU.ACC = CPU.ALU;
+        },
+
         // AND
+        AND: () => {
+            CPU.Z = CPU.ACC;
+            CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
+            let aux = '';
+            for (let i = 0; i < 16; i++) {
+                if (CPU.Z.charAt(i) == '1' && CPU.Y.charAt(i) == '1') {
+                    aux = aux + '1';
+                } else {
+                    aux = aux + '0';
+                }
+            }
+            CPU.ALU = aux;
+            CPU.ACC = CPU.ALU;
+        },
+
         // IOR
+        IOR: () => {
+            CPU.Z = CPU.ACC;
+            CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
+            let aux = '';
+            for (let i = 0; i < 16; i++) {
+                if (CPU.Z.charAt(i) == '1' || CPU.Y.charAt(i) == '1') {
+                    aux = aux + '1';
+                } else {
+                    aux = aux + '0';
+                }
+            }
+            CPU.ALU = aux;
+            CPU.ACC = CPU.ALU;
+        },
+
         // NOT
         NOT: () => {
             CPU.Z = CPU.ACC;
@@ -143,9 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // PRUEBA
 
-    /*
-    //PRUEBA DEL ADD
 
+    //PRUEBA DEL ADD
+    /*
     CPU.ACC = '0000000000000001';
     CPU.IR = '0000000000000111';
     UM.escribir_memoria('000000000111', '0000000000000011');
@@ -161,10 +207,53 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(CPU.Z)
     console.log(CPU.Y)
     console.log(CPU.ALU)
+    */
+
+
+    //PRUEBA DEL XOR
+    /* 
+    CPU.ACC = '1000000001000001';
+    CPU.IR = '0000000000000111';
+    UM.escribir_memoria('000000000111', '1100000000001111');
+    console.log(CPU.ACC);
+    console.log(CPU.ALU)
+
+    CPU.XOR();
+    console.log(CPU.ACC)
+    console.log(CPU.ALU)
+    */
+
+
+    //PRUEBA DEL AND
+    /* 
+    CPU.ACC = '1000000001000001';
+    CPU.IR = '0000000000000111';
+    UM.escribir_memoria('000000000111', '1100000000001111');
+    console.log(CPU.ACC);
+    console.log(CPU.ALU)
+
+    CPU.AND();
+    console.log(CPU.ACC)
+    console.log(CPU.ALU)
+    */
+
+
+    //PRUEBA DEL IOR
+    /*     
+    CPU.ACC = '1000000001000001';
+    CPU.IR = '0000000000000111';
+    UM.escribir_memoria('000000000111', '1100000000001111');
+    console.log(CPU.ACC);
+    console.log(CPU.ALU)
+
+    CPU.IOR();
+    console.log(CPU.ACC)
+    console.log(CPU.ALU)
+    */
 
 
     //PRUEBA DEL NOT
-    
+    /*
     CPU.ACC = '0000000011001001';
 
     console.log(CPU.ACC);
@@ -172,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
     CPU.NOT();
     
     console.log(CPU.ACC);
-
     */
 
 })
