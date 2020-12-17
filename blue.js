@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // TRABAJO TODO EN BINARIO Y CUANDO QUIERO OPERAR CONVIERTO A DECIMAL
 
-
+    //Probando las PULL REQUESTS
+    alert("Hola facu ce master");
+    
     //FUNCIONES ÚTILES
     function ponerCeros_16bits(s_num) {
         while (s_num.length < 16) {
