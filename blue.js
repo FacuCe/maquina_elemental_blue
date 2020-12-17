@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // TRABAJO TODO EN BINARIO Y CUANDO QUIERO OPERAR CONVIERTO A DECIMAL
 
 
-    //FUNCIONES ÚTILES
+    //FUNCIONES Y VARIABLES ÚTILES
+
+    let fin_del_programa = false;
+
     function ponerCeros_16bits(s_num) {
         while (s_num.length < 16) {
             s_num = '0' + s_num;
@@ -18,13 +21,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return s_num
     };
 
+    function incrementar_PC() {
+        CPU.Z = CPU.PC;
+        CPU.Y = CPU.R1;
+        let aux1 = parseInt(CPU.PC, 2);
+        let aux2 = parseInt(CPU.R1, 2);
+        let resultado_temporal = (aux1 + aux2).toString(2);
+        CPU.ALU = ponerCeros_16bits(resultado_temporal);
+        CPU.PC = CPU.ALU;
+    };
 
 
 
     // UNIDAD DE MEMORIA
 
     const cantidad_de_posiciones = 4096; // en octal: 7777
-    const longitud_de_palabra = 16; // formato en octal: xx-xxxx -> operación-dirección
 
     let UM = {
         MAR: '000000000000',
@@ -32,13 +43,13 @@ document.addEventListener('DOMContentLoaded', () => {
         memoria: new Array(cantidad_de_posiciones),
 
         set_MAR: (direccion) => {
-            UM.MAR = direccion;
+            UM.MAR = ponerCeros_12bits(direccion);
         },
         get_MAR: () => {
             return UM.MAR;
         },
         set_MBR: (palabra) => {
-            UM.MBR = palabra;
+            UM.MBR = ponerCeros_16bits(palabra);
         },
         get_MBR: () => {
             return UM.MBR;
@@ -55,26 +66,40 @@ document.addEventListener('DOMContentLoaded', () => {
             UM.set_MAR(direccion);
             UM.set_MBR(palabra);
             UM.memoria[parseInt(UM.MAR, 2)] = UM.MBR;
+        },
+        reset_memoria: () => {
+            UM.set_MAR('000000000000');
+            UM.set_MBR('0000000000000000');
+            for (let i = 0; i < UM.memoria.length; i++) {
+                UM.memoria[i] = '0000000000000000';
+            };
         }
     }
 
     // Inicializo la estructura de la memoria (RAM de 4096x16)
-
     for (let i = 0; i < UM.memoria.length; i++) {
         UM.memoria[i] = '0000000000000000';
+    };
+
+    // Inicializo la tabla del HTML
+
+    for (let i = 0; i < cantidad_de_posiciones; i++) {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i.toString(8)}</td><td>${UM.memoria[i]}</td>`;
+
+        document.querySelector('#cuerpo').append(tr);
     }
+
 
 
 
     // UNIDAD DE PROCESAMIENTO CENTRAL (CPU)
 
-    const registro_con_1 = '0000000000000001';
-
     let CPU = {
         ACC: '0000000000000000',
         IR: '0000000000000000',
         PC: '000000000000',
-        R1: registro_con_1,
+        R1: '0000000000000001',
         Z: '0000000000000000',
         Y: '0000000000000000',
         ALU: '0000000000000000',
@@ -96,9 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // INSTRUCCIONES
 
-        // HALT
+        HALT: () => {
+            fin_del_programa = true;
+        },
 
-        // ADD
         ADD: () => {
             CPU.Z = CPU.ACC;
             CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
@@ -107,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ACC = CPU.ALU;
         },
 
-        // XOR
         XOR: () => {
             CPU.Z = CPU.ACC;
             CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
@@ -123,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ACC = CPU.ALU;
         },
 
-        // AND
         AND: () => {
             CPU.Z = CPU.ACC;
             CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
@@ -139,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ACC = CPU.ALU;
         },
 
-        // IOR
         IOR: () => {
             CPU.Z = CPU.ACC;
             CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
@@ -155,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ACC = CPU.ALU;
         },
 
-        // NOT
         NOT: () => {
             CPU.Z = CPU.ACC;
             CPU.ALU = CPU.Z;
@@ -171,38 +193,33 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ACC = CPU.ALU;
         },
 
-        // LDA
         LDA: () => {
             CPU.ACC = UM.leer_memoria(CPU.leer_dir_IR());
         },
 
-        // STA
         STA: () => {
             UM.escribir_memoria(CPU.leer_dir_IR(), CPU.ACC);
         },
 
-        // SRJ
         SRJ: () => {
             CPU.ACC = CPU.PC;
             CPU.ACC = ponerCeros_16bits(CPU.ACC);
             CPU.PC = CPU.leer_dir_IR();
         },
 
-        // JMA
         JMA: () => {
             if (CPU.ACC.charAt(0) == '1') {
                 CPU.PC = CPU.leer_dir_IR();
             }
         },
 
-        // JMP
         JMP: () => {
             CPU.PC = CPU.leer_dir_IR();
         },
 
         // INP
         // OUT
-        // RAL
+
         RAL: () => {
             CPU.Z = CPU.ACC;
             let aux = '';
@@ -212,11 +229,186 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.ALU = aux + CPU.Z.charAt(0);
             CPU.ACC = CPU.ALU;
         },
-        // CSA
-        // NOP
+
+        CSA: () => {
+            CPU.ACC = UES.SR;
+        },
+
+        NOP: () => {
+            console.log('Se ejecutó la instrucción NOP');
+        },
     };
 
 
+
+    //UNIDAD DE ENTRADA SALIDA
+
+    let UES = {
+        SR: '0000000000000000',
+    };
+
+    document.querySelector('#SR').innerHTML = UES.SR;
+
+
+
+    //PROGRAMA PRINCIPAL
+
+
+    document.querySelector('form').onsubmit = () => {
+        // Envío el SR
+        UES.SR = document.querySelector('#registro-sr').value;
+
+        document.querySelector('#SR').innerHTML = UES.SR;
+
+        return false;   //para evitar problemas con el submit
+    };
+
+
+    function ejecutar_programa() {
+        CPU.IR = UM.leer_memoria(CPU.PC);
+        incrementar_PC();
+
+        switch (CPU.leer_cod_oper_IR()) {
+            case '0000':
+                CPU.HALT();
+                console.log('HALT')
+                break;
+            case '0001':
+                CPU.ADD();
+                console.log('ADD')
+                break;
+            case '0010':
+                CPU.XOR();
+                console.log('XOR')
+                break;
+            case '0011':
+                CPU.AND();
+                console.log('AND')
+                break;
+            case '0100':
+                CPU.IOR();
+                console.log('IOR')
+                break;
+            case '0101':
+                CPU.NOT();
+                console.log('NOT')
+                break;
+            case '0110':
+                CPU.LDA();
+                console.log('LDA')
+                break;
+            case '0111':
+                CPU.STA();
+                console.log('STA')
+                break;
+            case '1000':
+                CPU.SRJ();
+                console.log('SRJ')
+                break;
+            case '1001':
+                CPU.JMA();
+                console.log('JMA')
+                break;
+            case '1010':
+                CPU.JMP();
+                console.log('JMP')
+                break;
+            case '1011':
+                //INPUT
+                console.log('INP')
+                break;
+            case '1100':
+                //OUTPUT
+                console.log('OUT')
+                break;
+            case '1101':
+                CPU.RAL();
+                console.log('RAL')
+                break;
+            case '1110':
+                CPU.CSA();
+                console.log('CSA')
+                break;
+            case '1111':
+                CPU.NOP();
+                console.log('NOP')
+                break;
+            default:
+                console.log('Campo de operación no reconocido')
+                break;
+        };
+    };
+
+    const b_start = document.querySelector('#start');
+    const b_stop = document.querySelector('#stop');
+    const b_loadpc = document.querySelector('#loadpc');
+    const b_deposite = document.querySelector('#deposite');
+    const b_examine = document.querySelector('#examine');
+    const b_reset = document.querySelector('#reset');
+    const b_paso_a_paso = document.querySelector('#paso-a-paso');
+
+
+    b_start.onclick = () => {
+        while (!fin_del_programa) {
+            ejecutar_programa();
+        }
+        console.log('Fin del programa')
+    }
+
+    b_stop.onclick = () => {
+        fin_del_programa = true;
+    }
+
+    b_loadpc.onclick = () => {
+        CPU.PC = UES.SR;
+        console.log('PC = ' + CPU.PC)
+    };
+
+    b_deposite.onclick = () => {
+        UM.escribir_memoria(CPU.PC, UES.SR);
+        console.log(`MAR = ${UM.MAR}, MBR = ${UM.MBR}`);
+        incrementar_PC();
+        console.log(`PC = ${CPU.PC}`);
+
+        //Actualizo la memoria
+        for (let i = 0; i < cantidad_de_posiciones; i++) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${i.toString(8)}</td><td>${(UM.memoria[i])}</td>`;
+
+            document.querySelector('#cuerpo').append(tr);
+        };
+    };
+
+    b_examine.onclick = () => {
+        CPU.IR = UM.leer_memoria(CPU.PC);
+        incrementar_PC();
+    };
+
+    b_reset.onclick = () => {
+        UM.reset_memoria();
+
+        CPU.ACC = '0000000000000000';
+        CPU.IR = '0000000000000000';
+        CPU.PC = '000000000000';
+        CPU.Z = '0000000000000000';
+        CPU.Y = '0000000000000000';
+        CPU.ALU = '0000000000000000';
+
+        UM.MAR = '000000000000';
+        UM.MBR = '0000000000000000';
+
+        UES.SR = '0000000000000000';
+
+        fin_del_programa = false;
+    };
+
+    b_paso_a_paso.onclick = () => {
+        if (!fin_del_programa) {
+            ejecutar_programa();
+        } else {
+            console.log('Fin del programa')
+        };
+    }
 
 
 

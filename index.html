@@ -1,12 +1,46 @@
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Máquina Elemental BLUE</title>
 
+    <link rel="stylesheet" href="style.css">
     <script src="blue.js"></script>
 </head>
+
 <body>
-    
+    <button id="start">START</button>
+    <button id="stop">STOP</button>
+    <button id="loadpc">LOAD PC</button>
+    <button id="deposite">DEPOSITE</button>
+    <button id="examine">EXAMINE</button>
+    <button id="reset">RESET</button>
+
+    <button id="paso-a-paso">Paso a paso</button>
+
+    <form>
+        <div id="reg-llaves">Registro de llaves (SR): <span id="SR"></span> </div>
+        <input id="registro-sr" type="text" autocomplete="off">
+        <input type="submit">
+    </form>
+
+    <h2>Unidad de Memoria</h2>
+
+    <div id="UM">
+        <table>
+            <thead>
+                <th>Dirección</th>
+                <th>Palabra</th>
+            </thead>
+            <tbody id="cuerpo"></tbody>
+        </table>
+    </div>
+
+    <div>
+        FALTA ACTUALIZAR LA MEMORIA PARA VER LOS RESULTADOS DEL PROGRAMA
+    </div>
+
 </body>
+
 </html>
