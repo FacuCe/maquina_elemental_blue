@@ -27,8 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let aux1 = parseInt(CPU.PC, 2);
         let aux2 = parseInt(CPU.R1, 2);
         let resultado_temporal = (aux1 + aux2).toString(2);
+        CPU.PC = ponerCeros_12bits(resultado_temporal);
         CPU.ALU = ponerCeros_16bits(resultado_temporal);
-        CPU.PC = CPU.ALU;
+        console.log(`PC = ${CPU.PC}`);
     };
 
 
@@ -90,6 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#cuerpo').append(tr);
     }
 
+    // Función para ver los 12 bits más bajos
+
+    function bits_mas_bajos_12(nro_16_bits) {
+        let direccion = '';
+        for (let i = 4; i < 16; i++) {
+            direccion = direccion + nro_16_bits.charAt(i);
+        };
+        return direccion;
+    };
 
 
 
@@ -99,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ACC: '0000000000000000',
         IR: '0000000000000000',
         PC: '000000000000',
-        R1: '0000000000000001',
+        R1: '1',
         Z: '0000000000000000',
         Y: '0000000000000000',
         ALU: '0000000000000000',
@@ -199,12 +209,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         STA: () => {
             UM.escribir_memoria(CPU.leer_dir_IR(), CPU.ACC);
+
+            //Modifico la memoria en pantalla
+            document.querySelector('#cuerpo').rows[parseInt(CPU.leer_dir_IR(), 2)].cells[1].innerHTML = `${CPU.ACC}`;
         },
 
         SRJ: () => {
             CPU.ACC = CPU.PC;
             CPU.ACC = ponerCeros_16bits(CPU.ACC);
             CPU.PC = CPU.leer_dir_IR();
+            console.log('dirección de retorno: ACC = ' + CPU.ACC)
         },
 
         JMA: () => {
@@ -228,10 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             CPU.ALU = aux + CPU.Z.charAt(0);
             CPU.ACC = CPU.ALU;
+            console.log('ACC = ' + CPU.ACC)
         },
 
         CSA: () => {
             CPU.ACC = UES.SR;
+            console.log('ACC = ' + CPU.ACC)
         },
 
         NOP: () => {
@@ -256,12 +272,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('form').onsubmit = () => {
         // Envío el SR
-        UES.SR = document.querySelector('#registro-sr').value;
+        UES.SR = (document.querySelector('#registro-sr').value).toString(2);
 
         document.querySelector('#SR').innerHTML = UES.SR;
 
         return false;   //para evitar problemas con el submit
     };
+
+    console.log(`PC = ${CPU.PC}`);  //Muestro el contador cuando abro la página
 
 
     function ejecutar_programa() {
@@ -360,23 +378,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     b_loadpc.onclick = () => {
-        CPU.PC = UES.SR;
-        console.log('PC = ' + CPU.PC)
+        CPU.PC = bits_mas_bajos_12(UES.SR);
+        console.log('PC = ' + CPU.PC);
     };
 
     b_deposite.onclick = () => {
         UM.escribir_memoria(CPU.PC, UES.SR);
-        console.log(`MAR = ${UM.MAR}, MBR = ${UM.MBR}`);
+
+        //Modifico la memoria en pantalla
+        document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[1].innerHTML = `${UES.SR}`;
+
         incrementar_PC();
-        console.log(`PC = ${CPU.PC}`);
-
-        //Actualizo la memoria
-        for (let i = 0; i < cantidad_de_posiciones; i++) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${i.toString(8)}</td><td>${(UM.memoria[i])}</td>`;
-
-            document.querySelector('#cuerpo').append(tr);
-        };
     };
 
     b_examine.onclick = () => {
@@ -398,6 +410,14 @@ document.addEventListener('DOMContentLoaded', () => {
         UM.MBR = '0000000000000000';
 
         UES.SR = '0000000000000000';
+
+        //Modifico la memoria en pantalla
+        for (let i = 0; i < cantidad_de_posiciones; i++) {
+            document.querySelector('tbody').rows[i].cells[1].innerHTML = '0000000000000000';
+        }
+
+        //Reseteo a cero el SR en pantalla
+        document.querySelector('#SR').innerHTML = '0000000000000000';
 
         fin_del_programa = false;
     };
