@@ -5,36 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Máquina Elemental BLUE</title>
 
+    <!-- Bootstrap 5.0.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
     <link rel="stylesheet" href="style.css">
     <script src="blue.js"></script>
 </head>
 
-<body>
-    <button id="start">START</button>
-    <button id="stop">STOP</button>
-    <button id="loadpc">LOAD PC</button>
-    <button id="deposite">DEPOSITE</button>
-    <button id="examine">EXAMINE</button>
-    <button id="reset">RESET</button>
+<body class="container-lg bg-light">
 
-    <button id="paso-a-paso">Paso a paso</button>
+    <header class="border border-3 border-dark bg-info mt-1 mb-3">
+        <h1 class="text-dark text-center">Máquina Elemental BLUE</h1>
+    </header>
 
-    <form>
-        <div id="reg-llaves">Registro de llaves (SR): <span id="SR"></span> </div>
-        <input id="registro-sr" type="text" autocomplete="off">
-        <input type="submit">
+
+    <div class="bg-light row p-2">
+        <button id="start" type="button" class="btn btn-outline-info m-2 col">START</button>
+        <button id="deposite" type="button" class="btn btn-outline-info m-2 col">DEPOSITE</button>
+
+        <div class="col-12"></div>
+
+        <button id="stop" type="button" class="btn btn-outline-info m-2 col">STOP</button>
+        <button id="examine" type="button" class="btn btn-outline-info m-2 col">EXAMINE</button>
+
+        <div class="col-12"></div>
+
+        <button id="loadpc" type="button" class="btn btn-outline-info m-2 col">LOAD PC</button>
+        <button id="reset" type="button" class="btn btn-outline-danger m-2 col">RESET</button>
+        <!-- En el boton Reset, agregar un mensaje que pregunte: está seguro que quiere resetear la memoria y los registros? -->
+
+        <div class="col-12"></div>
+
+        <button id="paso-a-paso" type="button" class="btn btn-outline-primary m-2 col">Ejecutar paso a paso</button>
+    </div>
+
+    <form class="form py-3">
+        <div id="reg-llaves" class="fw-bold my-3 text-center">Registro de llaves (SR): <span id="SR"></span> </div>
+        
+        <div class="row g-2 justify-content-center">
+            <div class="col-auto">
+                <label for="registro-sr" class="col-form-label">SR (binario):</label>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="registro-sr" class="form-control" aria-describedby="aviso-sr" autocomplete="off" placeholder="número de 16 bits">
+            </div>
+        </div>
+        
+        <div id="aviso-sr" class="form-text m-3 text-center text-danger fw-bolder">Recuerda siempre cargar el SR !</div>
+
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Cargar SR</button>
+        </div>
+
     </form>
 
-    <h2>Unidad de Memoria</h2>
+    <div>
+        <h2 class="text-center fw-light">Unidad de Memoria</h2>
 
-    <div id="UM">
-        <table>
-            <thead>
-                <th>Dirección</th>
-                <th>Palabra</th>
-            </thead>
-            <tbody id="cuerpo"></tbody>
-        </table>
+        <div id="UM">
+            <table class="table">
+                <thead class="text-center">
+                    <th scope="col">Dirección</th>
+                    <th scope="col">Palabra</th>
+                </thead>
+                <tbody id="cuerpo"></tbody>
+            </table>
+        </div>
     </div>
 </body>
 

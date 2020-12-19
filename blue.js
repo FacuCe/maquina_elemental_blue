@@ -375,6 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     b_stop.onclick = () => {
         fin_del_programa = true;
+        console.log('El programa se detuvo con STOP');
     }
 
     b_loadpc.onclick = () => {

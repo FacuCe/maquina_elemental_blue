@@ -2,27 +2,22 @@
 
 /* ESTILO SENCILLO Y TEMPORAL PARA PRUEBAS */
 
-* {
-    padding: 3px;
-}
-
-button {
-    margin: 3px;
-    margin-top: 20px;
-}
-
 #reg-llaves {
     margin: 20px 0px 10px;
 }
 
 #UM {
     overflow: scroll;
-    height: 400px;
-    width: 520px;
+    height: 300px;
+    width: 90%;
+}
+
+form {
+    background-color: lightgray;
 }
 
 table{
-    width: 500px;
+    width: fit-content;
 }
 
 table, th, td {
