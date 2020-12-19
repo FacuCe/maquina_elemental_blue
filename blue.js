@@ -272,18 +272,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('form').onsubmit = () => {
         // Envío el SR
-        UES.SR = (document.querySelector('#registro-sr').value).toString(2);
+        let aux = (document.querySelector('#registro-sr').value).toString(2);
+        aux = ponerCeros_16bits(aux);
 
-        document.querySelector('#SR').innerHTML = UES.SR;
+        for (let i = 0; i < aux.length; i++) {
+            if (aux.charAt(i) == '0' || aux.charAt(i) == '1') {
+                if (i == 15) {
+                    UES.SR = aux;
+                    document.querySelector('#SR').innerHTML = UES.SR;
+                }
+                continue;
+            } else {
+                alert('Ingrese un número en binario!')
+                break;
+            }
+        }
 
         return false;   //para evitar problemas con el submit
     };
 
     console.log(`PC = ${CPU.PC}`);  //Muestro el contador cuando abro la página
 
+    // Inicializo el estilo de la fila 0, donde está ubicado el PC
+    document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].className = 'bg-info';
+
 
     function ejecutar_programa() {
+        // Borro el color celeste del PC actual
+        borrar_linea_PC();
+
+        // Cargo el IR con la instruccion de la posición indicada por el PC
         CPU.IR = UM.leer_memoria(CPU.PC);
+
+        // Incremento el PC
         incrementar_PC();
 
         switch (CPU.leer_cod_oper_IR()) {
@@ -355,8 +376,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Campo de operación no reconocido')
                 break;
         };
+
+        // Pinto de color celeste el PC actual
+        nueva_linea_PC();
     };
 
+
+    // Funciones para borrar o pintar la línea donde se encuentra el PC
+    function borrar_linea_PC() {
+        let aux = document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)];
+        aux.className = '';
+    }
+    function nueva_linea_PC() {
+        let aux = document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)];
+        aux.className = 'bg-info';
+    }
+
+
+    // Funcionalidad de cada botón
     const b_start = document.querySelector('#start');
     const b_stop = document.querySelector('#stop');
     const b_loadpc = document.querySelector('#loadpc');
@@ -364,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const b_examine = document.querySelector('#examine');
     const b_reset = document.querySelector('#reset');
     const b_paso_a_paso = document.querySelector('#paso-a-paso');
-
 
     b_start.onclick = () => {
         while (!fin_del_programa) {
@@ -379,25 +415,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     b_loadpc.onclick = () => {
+        borrar_linea_PC();
         CPU.PC = bits_mas_bajos_12(UES.SR);
         console.log('PC = ' + CPU.PC);
+        nueva_linea_PC();
     };
 
     b_deposite.onclick = () => {
+        borrar_linea_PC();
+
         UM.escribir_memoria(CPU.PC, UES.SR);
 
         //Modifico la memoria en pantalla
         document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[1].innerHTML = `${UES.SR}`;
 
         incrementar_PC();
+        nueva_linea_PC();
     };
 
     b_examine.onclick = () => {
+        borrar_linea_PC();
         CPU.IR = UM.leer_memoria(CPU.PC);
         incrementar_PC();
+        nueva_linea_PC();
     };
 
     b_reset.onclick = () => {
+        borrar_linea_PC();
+
         UM.reset_memoria();
 
         CPU.ACC = '0000000000000000';
@@ -419,6 +464,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Reseteo a cero el SR en pantalla
         document.querySelector('#SR').innerHTML = '0000000000000000';
+
+        nueva_linea_PC();
 
         fin_del_programa = false;
     };
