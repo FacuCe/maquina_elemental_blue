@@ -21,6 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return s_num
     };
 
+    function ponerCeros_6_digitos(s_num) {  // Para completar el SR en octal
+        while (s_num.length < 6) {
+            s_num = '0' + s_num;
+        };
+        return s_num
+    }
+
     function incrementar_PC() {
         CPU.Z = CPU.PC;
         CPU.Y = CPU.R1;
@@ -263,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         SR: '0000000000000000',
     };
 
+    // Inicializo el SR en pantalla
     document.querySelector('#SR').innerHTML = UES.SR;
 
 
@@ -270,8 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
     //PROGRAMA PRINCIPAL
 
 
-    document.querySelector('form').onsubmit = () => {
-        // Envío el SR
+    // Función para cargar el SR
+    document.querySelector('#form-bin').onsubmit = () => {
         let aux = (document.querySelector('#registro-sr').value).toString(2);
         aux = ponerCeros_16bits(aux);
 
@@ -291,7 +299,81 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;   //para evitar problemas con el submit
     };
 
-    console.log(`PC = ${CPU.PC}`);  //Muestro el contador cuando abro la página
+    // Funciones para seleccionar el tipo de entrada
+
+    // Entrada en binario
+    document.querySelector('#b-bin').onclick = () => {
+        document.querySelector('#SR-base-texto').innerHTML = 'SR (binario):';
+        document.querySelector('#SR').innerHTML = UES.SR;
+        document.getElementsByName('name-placeholder')[0].placeholder = 'número de 16 bits';
+        document.querySelector('#registro-sr').maxLength = "16";
+
+        document.querySelector('#form-bin').onsubmit = () => {
+            let aux = (document.querySelector('#registro-sr').value).toString(2);
+            aux = ponerCeros_16bits(aux);
+
+            for (let i = 0; i < aux.length; i++) {
+                if (aux.charAt(i) == '0' || aux.charAt(i) == '1') {
+                    if (i == 15) {
+                        UES.SR = aux;
+                        document.querySelector('#SR').innerHTML = UES.SR;
+                    }
+                    continue;
+                } else {
+                    alert('Ingrese un número en binario!')
+                    break;
+                }
+            }
+
+            return false;   //para evitar problemas con el submit
+        };
+    };
+
+    // Entrada en octal
+    document.querySelector('#b-oct').onclick = () => {
+        // Muestro el SR
+        document.querySelector('#SR').innerHTML = ponerCeros_6_digitos((parseInt(UES.SR, 2)).toString(8));
+        document.querySelector('#SR-base-texto').innerHTML = 'SR (octal):'
+        document.getElementsByName('name-placeholder')[0].placeholder = 'número de 8 dígitos';
+        document.querySelector('#registro-sr').maxLength = "6";
+
+
+        document.querySelector('#form-bin').onsubmit = () => {
+            let aux = (document.querySelector('#registro-sr').value).toString(8);
+            aux = ponerCeros_6_digitos(aux)
+
+            if (aux.charAt(0) != '0' && aux.charAt(0) != '1') {
+                alert('El primer dígito octal sólo puede ser 0 o 1')
+            } else {
+                for (let i = 0; i < aux.length; i++) {
+                    if (!(aux.charAt(i) in ['0', '1', '2', '3', '4', '5', '6', '7'])) {
+                        alert('Ingrese un número en octal');
+                        break;
+                    } else {
+                        if (i == 5) {
+                            aux = parseInt(aux, 8);
+                            aux = aux.toString(2);
+
+                            aux = ponerCeros_16bits(aux);
+
+                            UES.SR = aux;
+
+                            let a_octal = (parseInt(UES.SR, 2)).toString(8)
+                            document.querySelector('#SR').innerHTML = ponerCeros_6_digitos(a_octal);
+                        }
+                    }
+                }
+            }
+
+            return false;   //para evitar problemas con el submit
+        };
+    }
+
+    // Entrada en Mnemónico
+    // FALTA
+
+
+    console.log(`PC = ${CPU.PC}`);  //Muestro el contador de programa cuando abro la página
 
     // Inicializo el estilo de la fila 0, donde está ubicado el PC
     document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].className = 'bg-info';
@@ -477,158 +559,4 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Fin del programa')
         };
     }
-
-
-
-    // PRUEBAS
-
-
-    //PRUEBA DEL ADD
-    /*
-    CPU.ACC = '0000000000000001';
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '0000000000000011');
-
-    console.log(CPU.ACC)
-    console.log(CPU.Z)
-    console.log(CPU.Y)
-    console.log(CPU.ALU)
-
-    CPU.ADD();
-
-    console.log(CPU.ACC)
-    console.log(CPU.Z)
-    console.log(CPU.Y)
-    console.log(CPU.ALU)
-    */
-
-
-    //PRUEBA DEL XOR
-    /* 
-    CPU.ACC = '1000000001000001';
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '1100000000001111');
-    console.log(CPU.ACC);
-    console.log(CPU.ALU)
-
-    CPU.XOR();
-    console.log(CPU.ACC)
-    console.log(CPU.ALU)
-    */
-
-
-    //PRUEBA DEL AND
-    /* 
-    CPU.ACC = '1000000001000001';
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '1100000000001111');
-    console.log(CPU.ACC);
-    console.log(CPU.ALU)
-
-    CPU.AND();
-    console.log(CPU.ACC)
-    console.log(CPU.ALU)
-    */
-
-
-    //PRUEBA DEL IOR
-    /*     
-    CPU.ACC = '1000000001000001';
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '1100000000001111');
-    console.log(CPU.ACC);
-    console.log(CPU.ALU)
-
-    CPU.IOR();
-    console.log(CPU.ACC)
-    console.log(CPU.ALU)
-    */
-
-
-    //PRUEBA DEL NOT
-    /*
-    CPU.ACC = '0000000011001001';
-
-    console.log(CPU.ACC);
-
-    CPU.NOT();
-    
-    console.log(CPU.ACC);
-    */
-
-
-    //PRUEBA DEL LDA
-    /*
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '1100000000001111');
-    console.log(CPU.ACC);
-
-    CPU.LDA();
-    console.log(CPU.ACC);
-    */
-
-
-    //PRUEBA DEL STA
-    /*
-    CPU.ACC = '1111111111000000'
-    CPU.IR = '0000000000000111';
-    UM.escribir_memoria('000000000111', '1100000000001111');
-    console.log(UM.leer_memoria('000000000111'));
-
-
-    CPU.STA();
-    console.log(UM.leer_memoria('000000000111'));
-    */
-
-
-    //PRUEBA DEL SRJ
-    /*
-    CPU.ACC = '1111111111000000';
-    CPU.PC = '000000000111';
-    CPU.IR = '0000000001000000';
-    console.log(CPU.ACC);
-    console.log(CPU.PC);
-    console.log(CPU.IR);
-
-    CPU.SRJ();
-    console.log(CPU.ACC);
-    console.log(CPU.PC);
-    */
-
-
-    //PRUEBA DEL JMA
-    /*
-    CPU.ACC = '1000000000000000';
-    CPU.IR = '0000000000011000';
-    CPU.PC = '000000000001';
-    console.log(CPU.PC)
-
-    CPU.JMA();
-
-    console.log(CPU.PC);    //cambia el PC porque el ACC empieza con 1
-    */
-
-
-    //PRUEBA DEL JMP
-    /*
-    CPU.PC = '000000110010';
-    CPU.IR = '0000000010000001';
-    console.log(CPU.PC);
-
-    CPU.JMP();
-    console.log(CPU.PC);
-    */
-
-
-    //PRUEBA DEL RAL
-    /*
-    CPU.ACC = '0000000100010011';
-    console.log(CPU.ACC);
-
-    CPU.RAL();
-    console.log(CPU.ACC);
-    */
-
-
-
 })

@@ -15,7 +15,7 @@
 
 <body class="container-lg bg-light">
 
-    <header class="border border-3 border-dark bg-info mt-1 mb-3">
+    <header class="border border-3 border-dark bg-info mt-1 mb-3 pt-2">
         <h1 class="text-dark text-center">Máquina Elemental BLUE</h1>
     </header>
 
@@ -40,18 +40,40 @@
         <button id="paso-a-paso" type="button" class="btn btn-outline-primary m-2 col">Ejecutar paso a paso</button>
     </div>
 
-    <form class="form py-3">
-        <div id="reg-llaves" class="fw-bold my-3 text-center">Registro de llaves (SR): <span id="SR"></span> </div>
+    <!-- ------------------------------------------------------------ -->
+
+    <form id="form-bin" class="form py-3 text-center">
+
+        <!-- Botones para elegir el tipo de entrada -->
+        <div class="fw-light">Seleccione el formato de entrada:</div>
+
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="b-bin" autocomplete="off" checked>
+            <label class="btn btn-outline-info" for="b-bin">Binario</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="b-oct" autocomplete="off">
+            <label class="btn btn-outline-info" for="b-oct">Octal</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="b-mne" autocomplete="off" disabled>
+            <label class="btn btn-outline-dark" for="b-mne">Mnemónico</label>
+        </div>
+
+
+        <!-- Para ingresar valores al SR -->
+
+        <div class="reg-llaves" class="fw-bold my-3 text-center">Registro de llaves (SR): <span id="SR"></span> </div>
 
         <div class="row g-2 justify-content-center">
             <div class="col-auto">
-                <label for="registro-sr" class="col-form-label">SR (binario):</label>
+                <label for="registro-sr" class="col-form-label"> <span id="SR-base-texto">SR (binario):</span></label>
             </div>
             <div class="col-auto">
-                <input type="text" id="registro-sr" class="form-control" aria-describedby="aviso-sr" autocomplete="off"
-                    placeholder="número de 16 bits" maxlength="16" autofocus>
+                <input type="text" name="name-placeholder" id="registro-sr" class="form-control"
+                    aria-describedby="aviso-sr" autocomplete="off" placeholder="número de 16 bits" maxlength="16"
+                    autofocus>
             </div>
         </div>
+
 
         <div id="aviso-sr" class="form-text m-3 text-center text-danger fw-bolder">Recuerda siempre cargar el SR !</div>
 
@@ -60,6 +82,8 @@
         </div>
 
     </form>
+
+    <!-- ------------------------------------------------------------ -->
 
     <div>
         <h2 class="text-center fw-light">Unidad de Memoria</h2>
