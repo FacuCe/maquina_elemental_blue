@@ -1,5 +1,4 @@
 
-
 /* ESTILO SENCILLO Y TEMPORAL PARA PRUEBAS */
 
 .reg-llaves {
@@ -12,15 +11,10 @@
     width: 90%;
 }
 
-form {
+form, #ACC {
     background-color: lightgray;
 }
 
-table{
-    width: fit-content;
-}
-
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
+#th {
+    background-color: gray;
 }

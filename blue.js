@@ -93,7 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (let i = 0; i < cantidad_de_posiciones; i++) {
         let tr = document.createElement('tr');
-        tr.innerHTML = `<td>${i.toString(8)}</td><td>${UM.memoria[i]}</td>`;
+
+        let a_octal = ponerCeros_6_digitos((parseInt(UM.memoria[i], 2)).toString(8));
+
+        tr.innerHTML = `<td>${i.toString(8)}</td><td>${UM.memoria[i]}</td><td>${a_octal}</td>`;
 
         document.querySelector('#cuerpo').append(tr);
     }
@@ -217,8 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
         STA: () => {
             UM.escribir_memoria(CPU.leer_dir_IR(), CPU.ACC);
 
+            let a_octal = ponerCeros_6_digitos((parseInt(CPU.ACC, 2)).toString(8));
+
             //Modifico la memoria en pantalla
             document.querySelector('#cuerpo').rows[parseInt(CPU.leer_dir_IR(), 2)].cells[1].innerHTML = `${CPU.ACC}`;
+            document.querySelector('#cuerpo').rows[parseInt(CPU.leer_dir_IR(), 2)].cells[2].innerHTML = `${a_octal}`;
         },
 
         SRJ: () => {
@@ -373,7 +379,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // FALTA
 
 
-    console.log(`PC = ${CPU.PC}`);  //Muestro el contador de programa cuando abro la página
+    //Muestro el contador de programa cuando abro la página
+    console.log(`PC = ${CPU.PC}`);
+    // Muestro el ACC en pantalla cuando abro la página
+    document.querySelector('#ACC-b').innerHTML = CPU.ACC;
+    document.querySelector('#ACC-o').innerHTML = ponerCeros_6_digitos((parseInt(CPU.ACC, 2)).toString(8));
+    function actualizar_ACC() {
+        document.querySelector('#ACC-b').innerHTML = CPU.ACC;
+        document.querySelector('#ACC-o').innerHTML = ponerCeros_6_digitos((parseInt(CPU.ACC, 2)).toString(8));
+    }
 
     // Inicializo el estilo de la fila 0, donde está ubicado el PC
     document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].className = 'bg-info';
@@ -382,6 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function ejecutar_programa() {
         // Borro el color celeste del PC actual
         borrar_linea_PC();
+
+        // Muestro el ACC en pantalla
+        actualizar_ACC();
 
         // Cargo el IR con la instruccion de la posición indicada por el PC
         CPU.IR = UM.leer_memoria(CPU.PC);
@@ -392,7 +409,8 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (CPU.leer_cod_oper_IR()) {
             case '0000':
                 CPU.HALT();
-                console.log('HALT')
+                console.log('HALT');
+                console.log('Programa finalizado con HALT, para escribir un nuevo programa pulse RESET');
                 break;
             case '0001':
                 CPU.ADD();
@@ -459,6 +477,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         };
 
+        // Muestro el ACC en pantalla
+        actualizar_ACC();
+
         // Pinto de color celeste el PC actual
         nueva_linea_PC();
     };
@@ -508,8 +529,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         UM.escribir_memoria(CPU.PC, UES.SR);
 
+        let a_octal = ponerCeros_6_digitos((parseInt(UES.SR, 2)).toString(8));
+
         //Modifico la memoria en pantalla
         document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[1].innerHTML = `${UES.SR}`;
+
+        document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[2].innerHTML = `${a_octal}`;
 
         incrementar_PC();
         nueva_linea_PC();
@@ -542,10 +567,12 @@ document.addEventListener('DOMContentLoaded', () => {
         //Modifico la memoria en pantalla
         for (let i = 0; i < cantidad_de_posiciones; i++) {
             document.querySelector('tbody').rows[i].cells[1].innerHTML = '0000000000000000';
-        }
+        };
+        for (let i = 0; i < cantidad_de_posiciones; i++) {
+            document.querySelector('tbody').rows[i].cells[2].innerHTML = '000000';
+        };
 
-        //Reseteo a cero el SR en pantalla
-        document.querySelector('#SR').innerHTML = '0000000000000000';
+        actualizar_ACC();
 
         nueva_linea_PC();
 
@@ -556,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!fin_del_programa) {
             ejecutar_programa();
         } else {
-            console.log('Fin del programa')
+            console.log('Para escribir otro programa presione RESET')
         };
     }
 })
