@@ -54,8 +54,8 @@
             <input type="radio" class="btn-check" name="btnradio" id="b-oct" autocomplete="off">
             <label class="btn btn-outline-info" for="b-oct">Octal</label>
 
-            <input type="radio" class="btn-check" name="btnradio" id="b-mne" autocomplete="off" disabled>
-            <label class="btn btn-outline-dark" for="b-mne">Mnemónico</label>
+            <input type="radio" class="btn-check" name="btnradio" id="b-mne" autocomplete="off">
+            <label class="btn btn-outline-info" for="b-mne">Mnemónico</label>
         </div>
 
 
@@ -65,21 +65,27 @@
             <span id="SR"></span>
         </div>
 
-        <div class="row g-2 justify-content-center">
-            <div class="col-auto">
+        <div class="row g-3 justify-content-center mx-2">
+            <div class="col-4">
                 <label for="registro-sr" class="col-form-label">
                     <span id="SR-base-texto">SR (binario):</span>
                 </label>
             </div>
-            <div class="col-auto">
+            <div class="col">
                 <input type="text" name="name-placeholder" id="registro-sr" class="form-control"
                     aria-describedby="aviso-sr" autocomplete="off" placeholder="número de 16 bits" maxlength="16"
                     autofocus>
             </div>
+            <!-- Dirección para el mnemónico -->
+            <div id="dir-mnemonico-div" class="col-4 d-none">
+                <input type="text" name="name-placeholder" id="dir-mnemonico" class="form-control"
+                    aria-describedby="aviso-sr" autocomplete="off" placeholder="octal (4)" maxlength="4" autofocus>
+            </div>
         </div>
 
 
-        <div id="aviso-sr" class="form-text my-3 text-center text-danger fw-bolder">Recuerda siempre cargar el SR !</div>
+        <div id="aviso-sr" class="form-text my-3 text-center text-danger fw-bolder">Recuerda siempre cargar el SR !
+        </div>
 
         <div class="text-center">
             <button class="btn btn-primary" type="submit">Cargar SR</button>

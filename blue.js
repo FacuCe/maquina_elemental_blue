@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
             s_num = '0' + s_num;
         };
         return s_num
+    };
+
+    function ponerCeros_4_digitos_octales(s_num) {  // Para completar el SR en octal
+        while (s_num.length < 4) {
+            s_num = '0' + s_num;
+        };
+        return s_num
     }
 
     function incrementar_PC() {
@@ -313,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#SR').innerHTML = UES.SR;
         document.getElementsByName('name-placeholder')[0].placeholder = 'número de 16 bits';
         document.querySelector('#registro-sr').maxLength = "16";
+        document.querySelector('#dir-mnemonico-div').className = 'col-4 d-none';
 
         document.querySelector('#form-bin').onsubmit = () => {
             let aux = (document.querySelector('#registro-sr').value).toString(2);
@@ -342,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#SR-base-texto').innerHTML = 'SR (octal):'
         document.getElementsByName('name-placeholder')[0].placeholder = 'número de 8 dígitos';
         document.querySelector('#registro-sr').maxLength = "6";
+        document.querySelector('#dir-mnemonico-div').className = 'col-4 d-none';
 
 
         document.querySelector('#form-bin').onsubmit = () => {
@@ -376,7 +385,123 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Entrada en Mnemónico
-    // FALTA
+    document.querySelector('#b-mne').onclick = () => {
+        // Muestro el SR
+        document.querySelector('#SR').innerHTML = ponerCeros_6_digitos((parseInt(UES.SR, 2)).toString(8));
+        document.querySelector('#SR-base-texto').innerHTML = 'SR:'
+        document.getElementsByName('name-placeholder')[0].placeholder = 'Cod (3)';
+        document.querySelector('#registro-sr').maxLength = "3";
+        document.querySelector('#dir-mnemonico-div').className = 'col-4';
+        document.querySelector('#dir-mnemonico').maxLength = "4";
+
+        document.querySelector('#form-bin').onsubmit = () => {
+            let cod = document.querySelector('#registro-sr').value;
+            let dir = (document.querySelector('#dir-mnemonico').value).toString(8);
+            dir = ponerCeros_4_digitos_octales(dir);
+
+            let list = ['hlt', 'HLT', 'add', 'ADD', 'xor', 'XOR', 'and', 'AND', 'ior', 'IOR', 'not', 'NOT', 'lda', 'LDA', 'sta', 'STA', 'srj', 'SRJ', 'jma', 'JMA',
+                'jmp', 'JMP', 'inp', 'INP', 'out', 'OUT', 'ral', 'RAL', 'csa', 'CSA', 'nop', 'NOP'];
+
+            if (!(list.includes(cod))) {
+                alert('Código de operación no válido. Ingrese todo en minúsculas o todo en mayúsculas.');
+            } else {
+                for (let i = 0; i < dir.length; i++) {
+                    if (!(dir.charAt(i) in ['0', '1', '2', '3', '4', '5', '6', '7'])) {
+                        alert('Ingrese una dirección en octal');
+                        break;
+                    } else {
+                        if (i == 3) {
+                            let index_list = list.indexOf(cod);
+                            let aux = '';
+
+                            switch (index_list) {
+                                case 0:
+                                case 1:
+                                    aux = '0000';
+                                    break;
+                                case 2:
+                                case 3:
+                                    aux = '0001';
+                                    break;
+                                case 4:
+                                case 5:
+                                    aux = '0010';
+                                    break;
+                                case 6:
+                                case 7:
+                                    aux = '0011';
+                                    break;
+                                case 8:
+                                case 9:
+                                    aux = '0100';
+                                    break;
+                                case 10:
+                                case 11:
+                                    aux = '0101';
+                                    break;
+                                case 12:
+                                case 13:
+                                    aux = '0110';
+                                    break;
+                                case 14:
+                                case 15:
+                                    aux = '0111';
+                                    break;
+                                case 16:
+                                case 17:
+                                    aux = '1000';
+                                    break;
+                                case 18:
+                                case 19:
+                                    aux = '1001';
+                                    break;
+                                case 20:
+                                case 21:
+                                    aux = '1010';
+                                    break;
+                                case 22:
+                                case 23:
+                                    aux = '1011';
+                                    break;
+                                case 24:
+                                case 25:
+                                    aux = '1100';
+                                    break;
+                                case 26:
+                                case 27:
+                                    aux = '1101';
+                                    break;
+                                case 28:
+                                case 29:
+                                    aux = '1110';
+                                    break;
+                                case 20:
+                                case 31:
+                                    aux = '1111';
+                                    break;
+                                default:
+                                    break;
+                            };
+
+                            dir = parseInt(dir, 8);
+                            dir = dir.toString(2);
+                            dir = ponerCeros_12bits(dir);
+                            console.log(dir);
+
+                            aux = aux.concat(dir);
+                            console.log(aux)
+
+                            UES.SR = aux;
+
+                            let a_octal = (parseInt(UES.SR, 2)).toString(8)
+                            document.querySelector('#SR').innerHTML = ponerCeros_6_digitos(a_octal);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
 
 
     //Muestro el contador de programa cuando abro la página
@@ -533,7 +658,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Modifico la memoria en pantalla
         document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[1].innerHTML = `${UES.SR}`;
-
         document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)].cells[2].innerHTML = `${a_octal}`;
 
         incrementar_PC();
@@ -562,13 +686,9 @@ document.addEventListener('DOMContentLoaded', () => {
         UM.MAR = '000000000000';
         UM.MBR = '0000000000000000';
 
-        UES.SR = '0000000000000000';
-
         //Modifico la memoria en pantalla
         for (let i = 0; i < cantidad_de_posiciones; i++) {
             document.querySelector('tbody').rows[i].cells[1].innerHTML = '0000000000000000';
-        };
-        for (let i = 0; i < cantidad_de_posiciones; i++) {
             document.querySelector('tbody').rows[i].cells[2].innerHTML = '000000';
         };
 
