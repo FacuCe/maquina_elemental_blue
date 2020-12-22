@@ -3,9 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // TRABAJO TODO EN BINARIO Y CUANDO QUIERO OPERAR CONVIERTO A DECIMAL
 
 
+
     //FUNCIONES Y VARIABLES ÚTILES
 
     let fin_del_programa = false;
+
+
+    
+    //FUNCIONES ÚTILES
 
     function ponerCeros_16bits(s_num) {
         while (s_num.length < 16) {
@@ -610,6 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+
     // Funciones para borrar o pintar la línea donde se encuentra el PC
     function borrar_linea_PC() {
         let aux = document.querySelector('#cuerpo').rows[parseInt(CPU.PC, 2)];
@@ -707,3 +713,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 })
+
+})
+
