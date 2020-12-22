@@ -1,12 +1,129 @@
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Máquina Elemental BLUE</title>
 
+    <!-- Bootstrap 5.0.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="style.css">
     <script src="blue.js"></script>
 </head>
-<body>
-    
+
+<body class="container-lg bg-light p-1">
+
+    <header class="border border-3 border-dark bg-info mt-1 mb-3 pt-2">
+        <h1 class="text-dark text-center">Máquina Elemental BLUE</h1>
+    </header>
+
+
+    <div class="bg-light row mx-auto">
+        <button id="start" type="button" class="btn btn-outline-info m-2 col">START</button>
+        <button id="deposite" type="button" class="btn btn-outline-info m-2 col">DEPOSITE</button>
+
+        <div class="col-12"></div>
+
+        <button id="stop" type="button" class="btn btn-outline-info m-2 col">STOP</button>
+        <button id="examine" type="button" class="btn btn-outline-info m-2 col">EXAMINE</button>
+
+        <div class="col-12"></div>
+
+        <button id="loadpc" type="button" class="btn btn-outline-info m-2 col">LOAD PC</button>
+        <button id="reset" type="button" class="btn btn-outline-danger m-2 col">RESET</button>
+        <!-- En el boton Reset, agregar un mensaje que pregunte: está seguro que quiere resetear la memoria y los registros? -->
+
+        <div class="col-12"></div>
+
+        <button id="paso-a-paso" type="button" class="btn btn-outline-primary m-2 col">Ejecutar paso a paso</button>
+    </div>
+
+    <!-- ------------------------------------------------------------ -->
+
+    <form id="form-bin" class="form py-3 text-center border-top border-bottom border-2 border-dark">
+
+        <!-- Botones para elegir el tipo de entrada -->
+        <div class="fw-light">Seleccione el formato de entrada:</div>
+
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="b-bin" autocomplete="off" checked>
+            <label class="btn btn-outline-info" for="b-bin">Binario</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="b-oct" autocomplete="off">
+            <label class="btn btn-outline-info" for="b-oct">Octal</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="b-mne" autocomplete="off">
+            <label class="btn btn-outline-info" for="b-mne">Mnemónico</label>
+        </div>
+
+
+        <!-- Para ingresar valores al SR -->
+
+        <div class="fw-bold my-3 text-center reg-llaves">Registro de llaves (SR):
+            <span id="SR"></span>
+        </div>
+
+        <div class="row g-3 justify-content-center mx-2">
+            <div class="col-4">
+                <label for="registro-sr" class="col-form-label">
+                    <span id="SR-base-texto">SR (binario):</span>
+                </label>
+            </div>
+            <div class="col">
+                <input type="text" name="name-placeholder" id="registro-sr" class="form-control"
+                    aria-describedby="aviso-sr" autocomplete="off" placeholder="número de 16 bits" maxlength="16"
+                    autofocus>
+            </div>
+            <!-- Dirección para el mnemónico -->
+            <div id="dir-mnemonico-div" class="col-4 d-none">
+                <input type="text" name="name-placeholder" id="dir-mnemonico" class="form-control"
+                    aria-describedby="aviso-sr" autocomplete="off" placeholder="octal (4)" maxlength="4" autofocus>
+            </div>
+        </div>
+
+
+        <div id="aviso-sr" class="form-text my-3 text-center text-danger fw-bolder">Recuerda siempre cargar el SR !
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Cargar SR</button>
+        </div>
+
+    </form>
+
+    <!-- ------------------------------------------------------------ -->
+
+
+    <h2 class="text-center">Unidad de Memoria</h2>
+
+    <div id="UM" class="mx-auto">
+        <table class="table table-striped table-bordered border-dark caption-top">
+            <caption class="small text-center">Desliza hacia abajo para ver toda la memoria</caption>
+            <thead class="text-center" id="th">
+                <th scope="col">Dir</th>
+                <th scope="col">Binario</th>
+                <th scope="col">Octal</th>
+            </thead>
+            <tbody id="cuerpo" class="text-end"></tbody>
+        </table>
+    </div>
+
+
+
+    <!-- ------------------------------------------------------------ -->
+
+    <div id="ACC" class="text-center my-3 py-2 border-top border-bottom border-2 border-dark">
+        <h2>Registro Acumulador (ACC)</h4>
+            <div>bin: <span id="ACC-b"></span></div>
+            <div>oct: <span id="ACC-o"></span></div>
+    </div>
+
+    <!-- Script de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
