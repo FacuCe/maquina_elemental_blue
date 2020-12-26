@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let fin_del_programa = false;
 
 
-    
+
     //FUNCIONES ÚTILES
 
     function ponerCeros_16bits(s_num) {
@@ -49,6 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
         CPU.PC = ponerCeros_12bits(resultado_temporal);
         CPU.ALU = ponerCeros_16bits(resultado_temporal);
         console.log(`PC = ${CPU.PC}`);
+    };
+
+    function complemento_a_2(num_en_bin) {
+        num_en_bin = ponerCeros_16bits(num_en_bin);
+        let nuevo_numero = '';
+        for (let i = 0; i < num_en_bin.length; i++) {
+            if (num_en_bin.charAt(i) == '0') {
+                nuevo_numero = nuevo_numero + '1';
+            } else {
+                nuevo_numero = nuevo_numero + '0';
+            }
+        }
+        nuevo_numero = parseInt(nuevo_numero, 2);
+        nuevo_numero += 1;
+        nuevo_numero = nuevo_numero.toString(2);
+        return ponerCeros_16bits(nuevo_numero);
     };
 
 
@@ -160,9 +176,61 @@ document.addEventListener('DOMContentLoaded', () => {
         ADD: () => {
             CPU.Z = CPU.ACC;
             CPU.Y = UM.leer_memoria(CPU.leer_dir_IR());
-            CPU.ALU = (parseInt(CPU.Z, 2) + parseInt(CPU.Y, 2)).toString(2);
-            CPU.ALU = ponerCeros_16bits(CPU.ALU);
-            CPU.ACC = CPU.ALU;
+
+
+            // El resultado puede estar entre -32768 y 32767
+
+            // Caso 1: ACC (+) y dato de memoria (+)
+            if ((CPU.Z).charAt(0) == '0' && (CPU.Y).charAt(0) == '0') {
+                let resultado_decimal = parseInt(CPU.Z, 2) + parseInt(CPU.Y, 2);
+                if (resultado_decimal > 32767) {
+                    fin_del_programa = true;
+                    alert('Overflow en ALU (número mayor a 32767), presione RESET para escribir otro programa');
+                } else {
+                    let aux1 = resultado_decimal.toString(2);
+                    CPU.ALU = ponerCeros_16bits(aux1);
+                    CPU.ACC = CPU.ALU;
+                }
+            }
+            // Caso 2: ACC (+) y dato de memoria (-)
+            else if ((CPU.Z).charAt(0) == '0' && (CPU.Y).charAt(0) == '1') {
+                // como CPU.Y es negativo, lo paso a positivo con el complemento a 2 y se lo resto a CPU.Z
+                let y_positivo = complemento_a_2(CPU.Y);
+                let resultado_decimal = parseInt(CPU.Z, 2) - parseInt(y_positivo, 2);
+                if (resultado_decimal >= 0) {
+                    CPU.ALU = ponerCeros_16bits(resultado_decimal.toString(2));
+                    CPU.ACC = CPU.ALU;
+                } else {
+                    CPU.ALU = complemento_a_2((-resultado_decimal).toString(2));
+                    CPU.ACC = CPU.ALU;
+                }
+            }
+            // Caso 3: ACC (-) y dato de memoria (+)
+            else if ((CPU.Z).charAt(0) == '1' && (CPU.Y).charAt(0) == '0') {
+                // como CPU.Z es negativo, lo paso a positivo con el complemento a 2 (lo coloco en negativo) y le sumo CPU.Y
+                let z_positivo = complemento_a_2(CPU.Z);
+                let resultado_decimal = - parseInt(z_positivo, 2) + parseInt(CPU.Y, 2);
+                if (resultado_decimal >= 0) {
+                    CPU.ALU = ponerCeros_16bits(resultado_decimal.toString(2));
+                    CPU.ACC = CPU.ALU;
+                } else {
+                    CPU.ALU = complemento_a_2((-resultado_decimal).toString(2));
+                    CPU.ACC = CPU.ALU;
+                }
+            }
+            // Caso 4: ACC (-) y dato de memoria (-)
+            else if ((CPU.Z).charAt(0) == '1' && (CPU.Y).charAt(0) == '1') {
+                let y_positivo = complemento_a_2(CPU.Y);
+                let z_positivo = complemento_a_2(CPU.Z);
+                let resultado_decimal = - parseInt(z_positivo, 2) - parseInt(y_positivo, 2);
+                if (resultado_decimal < -32768) {
+                    fin_del_programa = true;
+                    alert('Overflow en ALU (número menor a -32768), presione RESET para escribir otro programa');
+                } else {
+                    CPU.ALU = complemento_a_2((-resultado_decimal).toString(2));
+                    CPU.ACC = CPU.ALU;
+                }
+            }
         },
 
         XOR: () => {
@@ -214,8 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
             CPU.Z = CPU.ACC;
             CPU.ALU = CPU.Z;
             let auxiliar = '';
-            for (let i = 0; i < CPU.ALU.length; i++) {
-                if (CPU.ALU.charAt(i) == '0') {
+            for (let i = 0; i < (CPU.ALU).length; i++) {
+                if ((CPU.ALU).charAt(i) == '0') {
                     auxiliar = auxiliar + '1';
                 } else {
                     auxiliar = auxiliar + '0';
@@ -240,14 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         SRJ: () => {
-            CPU.ACC = CPU.PC;
-            CPU.ACC = ponerCeros_16bits(CPU.ACC);
+            CPU.ACC = ponerCeros_16bits(CPU.PC);
             CPU.PC = CPU.leer_dir_IR();
             console.log('dirección de retorno: ACC = ' + CPU.ACC)
         },
 
         JMA: () => {
-            if (CPU.ACC.charAt(0) == '1') {
+            if ((CPU.ACC).charAt(0) == '1') {
                 CPU.PC = CPU.leer_dir_IR();
             }
         },
